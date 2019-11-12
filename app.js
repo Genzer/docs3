@@ -21,6 +21,8 @@ const LOG = winston.createLogger({
 });
 
 const app = express();
+app.set('strict routing', true);
+
 const port = 3000;
 
 const bucket = process.env.AWS_BUCKET_NAME;
@@ -70,7 +72,7 @@ const fetchS3Object = async (req, res) => {
   }
 
   if (object.ContentType === 'application/x-directory') {
-    res.redirect(`${req.url }/index.html`);
+    res.redirect(`${req.url }index.html`);
     return;
   }
 
