@@ -14,7 +14,7 @@ RUN addgroup -g 3000 docs3 \
 
 WORKDIR /apps/docs3
 
-COPY --chown=docs3:docs3 package.json app.js /apps/docs3/
+COPY --chown=docs3:docs3 .  /apps/docs3/
 
 RUN npm install --production
 

@@ -49,10 +49,11 @@ const fetchS3Object = async (req, res) => {
   const s3 = new AWS.S3({});
   const getFile = promisify(s3.getObject).bind(s3);
 
+  const key = req.url.endsWith('/') ? `${req.url}index.html` : req.url;
   const options = {
     Bucket: bucket,
     // Remove the first slash
-    Key: req.url.substr(1),
+    Key: key.substr(1),
   };
 
   LOG.info(`Fetching ${ options.Bucket }/${ options.Key }`);
@@ -65,10 +66,24 @@ const fetchS3Object = async (req, res) => {
     const {code} = error;
     if (code === 'NoSuchKey') {
       LOG.error('NoSuchkey %o', error);
-      res.status(404);
-      res.send(`Sorry! Cannot find any file at ${options.Key}`);
+      res.writeHead(404, {
+        'Content-Type': 'text/html',
+      });
+      const suggestion =
+        req.url.endsWith('/') ?
+          '' :
+          `<p>Did you mean <a href="${req.url}/">${req.url}/</a> instead?</p>`;
+      res.end(`
+      <!doctype html>
+        <html>
+          <body>
+            <p>Sorry! Cannot find any file at ${req.url}.<p>
+            ${suggestion}
+          </body>
+        </html>`);
       return;
     }
+    throw error;
   }
 
   if (object.ContentType === 'application/x-directory') {
@@ -85,6 +100,31 @@ const fetchS3Object = async (req, res) => {
   res.send(object.Body);
 };
 
+
+app.use('/', express.static('start-page'));
+app.use('/repos.json', async (req, res) => {
+  const s3 = new AWS.S3({});
+  const listFirstLevelDirectories = promisify(s3.listObjectsV2).bind(s3);
+
+  const options = {
+    Bucket: bucket,
+    Delimiter: '/',
+  };
+
+  const result = await listFirstLevelDirectories(options);
+  const pages = result.CommonPrefixes
+      .map((folder) => ({
+        name: folder.Prefix,
+        url: `${folder.Prefix}`,
+      }));
+
+  res.writeHead(200, {
+    'Content-Type': 'application/json',
+  });
+
+  res.end(JSON.stringify(pages));
+  return;
+});
 
 app.get('/*', tryIfError(fetchS3Object));
 app.use(resWithError);

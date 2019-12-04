@@ -1,6 +1,6 @@
 {
   "name": "docs3",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Serving Static Docs WebSite on S3",
   "main": "app.js",
   "repository": "https://github.com/Genzer/docs3",
