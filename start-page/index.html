@@ -1,5 +1,8 @@
+<!doctype html>
 <html lang="en">
 <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <link rel="stylesheet"
         href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
@@ -9,17 +12,16 @@
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
 </head>
 
-<body class="container">
-    <div id="app">
-        <h1 class="row">{{ repositories.length }} Available Repositories</h1>
-        <div class="row">
-            <ul id="repo-list" class="list-group">
-                <li v-for="repo in repositories" class="list-group-item">
-                    <a v-bind:href="repo.url">{{ repo.name }}</a>
-                </li>
-            </ul>
-        </div>
+<body>
+    <div id="app" class="container">
+        <h1 style="text-align: center;">{{ repositories.length }} Available Repositories</h1>
+        <ul id="repo-list" class="list-group">
+            <li v-for="repo in repositories" class="list-group-item">
+                <a v-bind:href="repo.url">{{ repo.name }}</a>
+            </li>
+        </ul>
     </div>
+
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
         integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
         crossorigin="anonymous"></script>
@@ -36,7 +38,6 @@
         fetch('/repos.json')
             .then(res => res.json())
             .then((repositories) => {
-                console.log(repositories);
                 const app = new Vue({
                     el: '#app',
                     data: {
