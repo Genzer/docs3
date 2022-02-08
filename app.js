@@ -45,6 +45,17 @@ const tryIfError = (middleware) => async (req, res, next) => {
   }
 };
 
+// HACK:
+// ----
+// 
+// According to a comment in GitHub issue #3005 [1] of aws-sdk-js, setting
+// disableFetchToken could reduce the time accessing S3 on EC2 instances
+// using IAM Role.
+//
+// [1]: https://github.com/aws/aws-sdk-js/issues/3005#issuecomment-768219394
+//
+AWS.config.credentials = new AWS.EC2MetadataCredentials({ disableFetchToken: true });
+
 const fetchS3Object = async (req, res) => {
   const s3 = new AWS.S3({});
   const getFile = promisify(s3.getObject).bind(s3);
