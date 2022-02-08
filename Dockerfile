@@ -1,4 +1,4 @@
-f
+FROM node:14.19.0-alpine3.15
 
 LABEL org.opencontainers.version="SHOULD_BE_REPLACED_ON_BUILD"
 LABEL org.opencontainers.image.description="A simple static web server for S3"
