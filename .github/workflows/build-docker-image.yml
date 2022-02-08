@@ -1,0 +1,38 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+      - name: Read VERSION
+        id: read_version
+        # GitHub Actions set-output DOES NOT support multi-line string
+        # so it only set the first line.
+        # The trick of using `echo` is found at https://stackoverflow.com/a/3458034/495558 
+        run: |
+          projectJson=$(cat package.json | jq -c '{name: .name, version: .version}')
+          echo "::set-output name=projectJson::$projectJson"
+      - name: "Build Docker image"
+        uses: "docker/build-push-action@v1"
+        with:
+          repository: "genzerhawker/docs3"
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+          tags:
+            ${{ fromJson(steps.read_version.outputs.projectJson).version }},
+            latest
+          labels: >
+            org.opencontainers.image.title=${{ fromJson(steps.read_version.outputs.projectJson).name }}
+            org.opencontainers.image.version=${{ fromJson(steps.read_version.outputs.projectJson).version }}
+          add_git_labels: true
