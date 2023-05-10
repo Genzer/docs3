@@ -1,5 +1,8 @@
 # docs3 - Docs on S3
 
+**DEPRECATION NOTICE**
+This repository is no longer maintained. I advised you to use https://github.com/nginxinc/nginx-s3-gateway instead.
+
 This repository aims to serve static files stored in AWS S3 Bucket through a very simple HTTP API.
 
 The reason for this module is that I want to host some static websites (mainly documentations) but I don't want to use make my Bucket _publicly read from the Internet_.
